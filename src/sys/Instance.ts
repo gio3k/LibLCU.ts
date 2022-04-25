@@ -6,20 +6,24 @@
  */
 
 import { Lockfile } from './Lockfile';
-import ClientHTTP from './tx/HTTP';
-import ClientWebSocket from './tx/WebSocket';
+import ClientHTTP from './tx/InstanceHTTP';
+import { SubscriptionCallbackFunction, ClientWebSocket } from './tx/InstanceWebSocket';
 
 export default class Instance {
-  lockfile: Lockfile;
+  private lockfile: Lockfile;
 
-  http: ClientHTTP;
+  public http: ClientHTTP;
 
-  websocket: ClientWebSocket;
+  public websocket: ClientWebSocket;
 
   private constructor(lockfile: Lockfile, http: ClientHTTP, websocket: ClientWebSocket) {
     this.lockfile = lockfile;
     this.http = http;
     this.websocket = websocket;
+  }
+
+  public subscribe(name: string, callback: SubscriptionCallbackFunction) {
+    this.websocket.subscribe(name, callback);
   }
 
   static async initialize(lockfile: Lockfile): Promise<Instance> {

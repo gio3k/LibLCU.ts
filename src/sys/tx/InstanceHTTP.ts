@@ -9,18 +9,27 @@ import { IncomingMessage } from 'http';
 import https from 'https';
 import { Lockfile } from '../Lockfile';
 
+type RequestExtraParams = {
+  data?: string;
+  charset?: string;
+  extraHeaders?: object;
+  expectedResponse?: number;
+};
+
 export default class ClientHTTP {
-  lockfile: Lockfile;
+  private lockfile: Lockfile;
 
   private constructor(lockfile: Lockfile) {
     this.lockfile = lockfile;
   }
 
-  static async request(
+  private static async request(
     lockfile: Lockfile,
     method: string,
     path: string,
-    { data, charset, extraHeaders } = { data: null, charset: '', extraHeaders: {} },
+    {
+      data = '', charset = '', extraHeaders = {}, expectedResponse = 0,
+    }: RequestExtraParams = {},
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       let buffer = '';
@@ -32,10 +41,16 @@ export default class ClientHTTP {
           Authorization: lockfile.basic,
           ...extraHeaders,
         },
-        hostname: '127.0.0.1',
+        hostname: lockfile.host,
         port: lockfile.port,
         rejectUnauthorized: false, // we need this, LCU uses a self-signed certificate!
       }, (result: IncomingMessage) => {
+        if (expectedResponse !== 0 && result.statusCode !== expectedResponse) {
+          console.error(`error response from ${path}`);
+          console.error(`error data ${buffer}`);
+          reject(new Error(`Unexpected response ${result.statusMessage} ${result.statusCode}`));
+        }
+
         result.on('data', (packet) => {
           buffer += packet;
         });
@@ -49,7 +64,7 @@ export default class ClientHTTP {
         reject(error);
       });
 
-      if (data != null) {
+      if (data !== '') {
         request.write(data);
       }
 
@@ -57,15 +72,19 @@ export default class ClientHTTP {
     });
   }
 
-  async request(
+  public async request(
     method: string,
     path: string,
-    { data, charset, extraHeaders } = { data: null, charset: '', extraHeaders: {} }
+    {
+      data, charset = '', extraHeaders = {}, expectedResponse = 0,
+    }: RequestExtraParams = {},
   ) {
-    return ClientHTTP.request(this.lockfile, method, path, { data, charset, extraHeaders });
+    return ClientHTTP.request(this.lockfile, method, path, {
+      data, charset, extraHeaders, expectedResponse,
+    });
   }
 
-  static async initialize(lockfile: Lockfile): Promise<ClientHTTP> {
+  public static async initialize(lockfile: Lockfile): Promise<ClientHTTP> {
     // Make sure we can connect and talk to the League Client
     let response;
 

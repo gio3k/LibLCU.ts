@@ -14,6 +14,8 @@ export class Lockfile {
 
   private basicAuth: string = '';
 
+  public host: string = '127.0.0.1';
+
   constructor(contents: string) {
     /**
      * The client lockfile is colon delimited.

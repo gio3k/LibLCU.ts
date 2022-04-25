@@ -17,10 +17,20 @@
     "name": "liblcu.ts",
     "version": "1.0.0",
     "description": "Library to interface with the League Client",
+    "main": "./dist/index.js",
+    "exports": {
+      ".": "./dist/index.js",
+      "./chat": "./dist/index-chat.js"
+    },
+    "types": "dist/index.d.ts",
+    "files": [
+      "/dist"
+    ],
     "directories": {
         "test": "test"
     },
     "scripts": {
+        "build": "npx tsc",
         "test": "npx ts-node test.ts"
     },
     "keywords": [
