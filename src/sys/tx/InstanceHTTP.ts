@@ -45,8 +45,9 @@ export default class ClientHTTP {
         port: lockfile.port,
         rejectUnauthorized: false, // we need this, LCU uses a self-signed certificate!
       }, (result: IncomingMessage) => {
+        console.log(path, result.statusCode);
         if (expectedResponse !== 0 && result.statusCode !== expectedResponse) {
-          console.error(`error response from ${path}`);
+          console.error(`error response, ${method} ${path}`);
           console.error(`error data ${buffer}`);
           reject(new Error(`Unexpected response ${result.statusMessage} ${result.statusCode}`));
         }
@@ -89,7 +90,7 @@ export default class ClientHTTP {
     let response;
 
     try {
-      response = await ClientHTTP.request(lockfile, 'GET', '/plugin-manager/v1/status');
+      response = await ClientHTTP.request(lockfile, 'GET', '/plugin-manager/v1/status', { expectedResponse: 200 });
     } catch (e) {
       throw new Error('Failed connection to League Client using HTTP.');
     }

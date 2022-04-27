@@ -11,7 +11,7 @@ export async function GetLolChatV1ConversationsByIdMessages(
   instance: Instance,
   id: string,
 ): Promise<LolChatConversationMessageResource[]> {
-  const result = await instance.http.request('GET', `/lol-chat/v1/conversations/${id}/messages`);
+  const result = await instance.http.request('GET', `/lol-chat/v1/conversations/${id}/messages`, { expectedResponse: 200 });
   return JSON.parse(result);
 }
 
