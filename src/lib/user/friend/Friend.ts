@@ -1,15 +1,15 @@
-import { PostLolChatV1BlockedPlayers } from '../../lcu/functions/LolChatV1BlockedPlayers';
+import { PostLolChatV1BlockedPlayers } from '../../../lcu/functions/LolChatV1BlockedPlayers';
 import {
   DeleteLolChatV1FriendsById,
   GetLolChatV1Friends,
   GetLolChatV1FriendsById,
   PutLolChatV1FriendsById,
-} from '../../lcu/functions/LolChatV1Friends';
-import { LolChatFriendResource } from '../../lcu/redone/LolChatFriendResource';
-import Instance from '../../sys/Instance';
-import User from './User';
+} from '../../../lcu/functions/LolChatV1Friends';
+import { LolChatFriendResource } from '../../../lcu/redone/LolChatFriendResource';
+import Instance from '../../../sys/Instance';
+import { KnownUser } from '../User';
 
-export default class Friend implements User {
+export default class Friend implements KnownUser {
   private instance: Instance;
 
   private resource: LolChatFriendResource;
@@ -48,12 +48,10 @@ export default class Friend implements User {
 
   get id() { return this.resource.id; }
 
+  get sid() { return this.resource.summonerId; }
+
   public getUser() {
     return this.resource;
-  }
-
-  public async update() {
-    this.resource = await GetLolChatV1FriendsById(this.instance, this.resource.id);
   }
 
   get note() {

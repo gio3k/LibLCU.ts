@@ -5,7 +5,9 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
+import Position from '../ours/Position';
+
 export interface LolLobbyLobbyPositionPreferences {
-  firstPreference: string;
-  secondPreference: string;
+  firstPreference: Position | string;
+  secondPreference: Position | string;
 }

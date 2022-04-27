@@ -1,11 +1,16 @@
 import { LolChatUserResource } from '../../lcu/generated/LolChatUserResource';
 
-export default interface User {
+export interface User {
+  readonly name: string;
+  icon: number;
+
+  readonly sid: number;
+}
+
+export interface KnownUser extends User {
   getUser(): LolChatUserResource;
 
-  readonly name: string;
   readonly tag: string;
-  icon: number;
 
   readonly region: string;
   readonly patchline: string;

@@ -8,8 +8,12 @@ import Instance from '../../sys/Instance';
 import { LolLootPlayerLoot } from '../generated/LolLootPlayerLoot';
 
 async function GetLolLootV1PlayerLoot(instance: Instance): Promise<LolLootPlayerLoot[]> {
-  const result = await instance.http.request('GET', '/lol-loot/v1/player-loot');
-  const json: LolLootPlayerLoot[] = JSON.parse(result);
-  return json;
+  let result: string;
+  try {
+    result = await instance.http.request('GET', '/lol-loot/v1/player-loot');
+  } catch (e) {
+    throw new Error(`GetLolLootV1PlayerLoot request error: ${e}`);
+  }
+  return JSON.parse(result);
 }
 export default GetLolLootV1PlayerLoot;

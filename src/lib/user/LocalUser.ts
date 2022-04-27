@@ -1,9 +1,9 @@
 import { GetLolChatV1Me, PutLolChatV1Me } from '../../lcu/functions/LolChatV1Me';
 import { LolChatUserResource } from '../../lcu/generated/LolChatUserResource';
 import Instance from '../../sys/Instance';
-import User from './User';
+import { KnownUser } from './User';
 
-export default class Me implements User {
+export default class LocalUser implements KnownUser {
   private instance: Instance;
 
   private resource: LolChatUserResource;
@@ -57,6 +57,8 @@ export default class Me implements User {
 
   get id() { return this.resource.id; }
 
+  get sid() { return this.resource.summonerId; }
+
   public getUser() {
     return this.resource;
   }
@@ -70,7 +72,7 @@ export default class Me implements User {
    * @param instance Client instance
    * @returns Promise<Me>
    */
-  public static async create(instance: Instance): Promise<Me> {
-    return new Me(instance, await GetLolChatV1Me(instance));
+  public static async get(instance: Instance): Promise<LocalUser> {
+    return new LocalUser(instance, await GetLolChatV1Me(instance));
   }
 }

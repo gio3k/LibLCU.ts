@@ -11,7 +11,12 @@ export async function GetLolChatV1ConversationsByIdMessages(
   instance: Instance,
   id: string,
 ): Promise<LolChatConversationMessageResource[]> {
-  const result = await instance.http.request('GET', `/lol-chat/v1/conversations/${id}/messages`, { expectedResponse: 200 });
+  let result: string;
+  try {
+    result = await instance.http.request('GET', `/lol-chat/v1/conversations/${id}/messages`, { expectedResponse: 200 });
+  } catch (e) {
+    throw new Error(`GetLolChatV1ConversationsByIdMessages request error: ${e}`);
+  }
   return JSON.parse(result);
 }
 
@@ -19,9 +24,15 @@ export async function PostLolChatV1ConversationsByIdMessages(
   instance: Instance,
   id: string,
   message: Partial<LolChatConversationMessageResource>,
-) {
-  await instance.http.request('POST', `/lol-chat/v1/conversations/${id}/messages`, {
-    data: JSON.stringify(message),
-    expectedResponse: 200,
-  });
+): Promise<LolChatConversationMessageResource> {
+  let result: string;
+  try {
+    result = await instance.http.request('POST', `/lol-chat/v1/conversations/${id}/messages`, {
+      data: JSON.stringify(message),
+      expectedResponse: 200,
+    });
+  } catch (e) {
+    throw new Error(`PostLolChatV1ConversationsByIdMessages request error: ${e}`);
+  }
+  return JSON.parse(result);
 }

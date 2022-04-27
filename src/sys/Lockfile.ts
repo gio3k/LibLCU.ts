@@ -60,18 +60,18 @@ export class Lockfile {
 
     return this.basicAuth;
   }
-}
 
-export async function readLockfile(src: string) {
-  let contents;
-  try {
-    await access(src, constants.R_OK);
-    contents = await readFile(src);
-  } catch (e) {
-    throw new Error(`Lockfile at "${src}" wasn't readable or didn't exist.`);
+  static async readFromFile(src: string) {
+    let contents;
+    try {
+      await access(src, constants.R_OK);
+      contents = await readFile(src);
+    } catch (e) {
+      throw new Error(`Lockfile at "${src}" wasn't readable or didn't exist.`);
+    }
+
+    return new Lockfile(`${contents}`);
   }
-
-  return new Lockfile(`${contents}`);
 }
 
 export async function locateAndReadLockfiles(extraLocations?: string[]) {
@@ -87,7 +87,7 @@ export async function locateAndReadLockfiles(extraLocations?: string[]) {
 
   for (const location of locations) {
     try {
-      results.push(readLockfile(location));
+      results.push(Lockfile.readFromFile(location));
     } catch (e) {}
   }
 
