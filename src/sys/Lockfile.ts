@@ -9,7 +9,7 @@ import { Buffer } from 'buffer';
 import { constants } from 'fs';
 import { readFile, access } from 'fs/promises';
 
-export class Lockfile {
+export default class Lockfile {
   private data: string[];
 
   private basicAuth: string = '';
@@ -61,7 +61,7 @@ export class Lockfile {
     return this.basicAuth;
   }
 
-  static async readFromFile(src: string) {
+  static async read(src: string) {
     let contents;
     try {
       await access(src, constants.R_OK);
@@ -72,28 +72,4 @@ export class Lockfile {
 
     return new Lockfile(`${contents}`);
   }
-}
-
-export async function locateAndReadLockfiles(extraLocations?: string[]) {
-  let locations = [
-    'C:\\Riot Games\\League of Legends\\lockfile',
-    '/Applications/League of Legends.app/Contents/LoL/lockfile',
-  ];
-  const results: Promise<Lockfile>[] = [];
-
-  if (typeof extraLocations !== 'undefined') {
-    locations = locations.concat(extraLocations);
-  }
-
-  for (const location of locations) {
-    try {
-      results.push(Lockfile.readFromFile(location));
-    } catch (e) {}
-  }
-
-  if (results.length === 0) {
-    throw new Error('No lockfiles found.');
-  }
-
-  return Promise.allSettled(results);
 }

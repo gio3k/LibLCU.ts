@@ -7,7 +7,7 @@
 
 import { IncomingMessage } from 'http';
 import https from 'https';
-import { Lockfile } from '../Lockfile';
+import Lockfile from '../Lockfile';
 
 type RequestExtraParams = {
   data?: string;

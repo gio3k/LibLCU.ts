@@ -6,7 +6,7 @@
  */
 
 import { WebSocket } from 'ws';
-import { Lockfile } from '../Lockfile';
+import Lockfile from '../Lockfile';
 
 export type SubscriptionCallbackFunction = ((...args: any[]) => void) | undefined;
 
