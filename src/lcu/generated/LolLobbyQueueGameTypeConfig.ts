@@ -5,7 +5,7 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-export interface LolLobbyQueueGameTypeConfig {
+export default interface LolLobbyQueueGameTypeConfig {
   id: number;
   name: string;
   maxAllowableBans: number;

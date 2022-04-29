@@ -8,7 +8,7 @@
 import LolLobbyInvitationType from './LolLobbyInvitationType';
 import LolLobbyLobbyInvitationState from './LolLobbyLobbyInvitationState';
 
-export interface LolLobbyLobbyInvitationDto {
+export default interface LolLobbyLobbyInvitationDto {
   invitationId: string;
   toSummonerId: number;
   state: LolLobbyLobbyInvitationState;

@@ -5,9 +5,9 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-import { LolLobbyLobbyCustomGameLobby } from './LolLobbyLobbyCustomGameLobby';
+import LolLobbyLobbyCustomGameLobby from './LolLobbyLobbyCustomGameLobby';
 
-export interface LolLobbyLobbyChangeGameDto {
+export default interface LolLobbyLobbyChangeGameDto {
   queueId: number;
   isCustom: boolean;
   customGameLobby?: LolLobbyLobbyCustomGameLobby;

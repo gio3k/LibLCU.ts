@@ -4,4 +4,4 @@
  * @author lotuspar, original functions by Riot Games
  */
 
-import Instance from '../../sys/Instance';
+import Connection from '../../sys/Connection';

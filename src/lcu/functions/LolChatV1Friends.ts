@@ -4,13 +4,17 @@
  * @author lotuspar, original functions by Riot Games
  */
 
-import Instance from '../../sys/Instance';
-import { LolChatFriendResource } from '../redone/LolChatFriendResource';
+import Connection from '../../sys/Connection';
+import LolChatFriendResource from '../redone/LolChatFriendResource';
 
-export async function GetLolChatV1Friends(instance: Instance): Promise<LolChatFriendResource[]> {
+export async function GetLolChatV1Friends(
+  connection: Connection,
+): Promise<LolChatFriendResource[]> {
   let result: string;
   try {
-    result = await instance.http.request('GET', '/lol-chat/v1/friends', { expectedResponse: 200 });
+    result = await connection.request('GET', '/lol-chat/v1/friends', {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolChatV1Friends request error: ${e}`);
   }
@@ -18,12 +22,14 @@ export async function GetLolChatV1Friends(instance: Instance): Promise<LolChatFr
 }
 
 export async function GetLolChatV1FriendsById(
-  instance: Instance,
+  connection: Connection,
   id: string,
 ): Promise<LolChatFriendResource> {
   let result: string;
   try {
-    result = await instance.http.request('GET', `/lol-chat/v1/friends/${id}`, { expectedResponse: 200 });
+    result = await connection.request('GET', `/lol-chat/v1/friends/${id}`, {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolChatV1FriendsById request error: ${e}`);
   }
@@ -31,19 +37,21 @@ export async function GetLolChatV1FriendsById(
 }
 
 export async function DeleteLolChatV1FriendsById(
-  instance: Instance,
+  connection: Connection,
   id: string,
 ) {
-  return instance.http.request('DELETE', `/lol-chat/v1/friends/${id}`, { expectedResponse: 200 });
+  return connection.request('DELETE', `/lol-chat/v1/friends/${id}`, {
+    expectation: { code: 200 },
+  });
 }
 
 export async function PutLolChatV1FriendsById(
-  instance: Instance,
+  connection: Connection,
   id: string,
   contact: Partial<LolChatFriendResource>,
 ) {
-  return instance.http.request('PUT', `/lol-chat/v1/friends/${id}`, {
+  return connection.request('PUT', `/lol-chat/v1/friends/${id}`, {
     data: JSON.stringify(contact),
-    expectedResponse: 201,
+    expectation: { code: 201 },
   });
 }

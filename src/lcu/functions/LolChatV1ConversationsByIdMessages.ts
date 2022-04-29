@@ -4,16 +4,18 @@
  * @author lotuspar, original functions by Riot Games
  */
 
-import Instance from '../../sys/Instance';
-import { LolChatConversationMessageResource } from '../generated/LolChatConversationMessageResource';
+import Connection from '../../sys/Connection';
+import LolChatConversationMessageResource from '../generated/LolChatConversationMessageResource';
 
 export async function GetLolChatV1ConversationsByIdMessages(
-  instance: Instance,
+  connection: Connection,
   id: string,
 ): Promise<LolChatConversationMessageResource[]> {
   let result: string;
   try {
-    result = await instance.http.request('GET', `/lol-chat/v1/conversations/${id}/messages`, { expectedResponse: 200 });
+    result = await connection.request('GET', `/lol-chat/v1/conversations/${id}/messages`, {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolChatV1ConversationsByIdMessages request error: ${e}`);
   }
@@ -21,15 +23,15 @@ export async function GetLolChatV1ConversationsByIdMessages(
 }
 
 export async function PostLolChatV1ConversationsByIdMessages(
-  instance: Instance,
+  connection: Connection,
   id: string,
   message: Partial<LolChatConversationMessageResource>,
 ): Promise<LolChatConversationMessageResource> {
   let result: string;
   try {
-    result = await instance.http.request('POST', `/lol-chat/v1/conversations/${id}/messages`, {
+    result = await connection.request('POST', `/lol-chat/v1/conversations/${id}/messages`, {
       data: JSON.stringify(message),
-      expectedResponse: 200,
+      expectation: { code: 200 },
     });
   } catch (e) {
     throw new Error(`PostLolChatV1ConversationsByIdMessages request error: ${e}`);

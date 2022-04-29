@@ -4,22 +4,24 @@
  * @author lotuspar, original functions by Riot Games
  */
 
-import Instance from '../../sys/Instance';
-import { LolChatUserResource } from '../generated/LolChatUserResource';
+import Connection from '../../sys/Connection';
+import LolChatUserResource from '../generated/LolChatUserResource';
 
-export async function GetLolChatV1Me(instance: Instance): Promise<LolChatUserResource> {
+export async function GetLolChatV1Me(connection: Connection): Promise<LolChatUserResource> {
   let result: string;
   try {
-    result = await instance.http.request('GET', '/lol-chat/v1/me', { expectedResponse: 200 });
+    result = await connection.request('GET', '/lol-chat/v1/me', {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolChatV1Me request error: ${e}`);
   }
   return JSON.parse(result);
 }
 
-export async function PutLolChatV1Me(instance: Instance, me: Partial<LolChatUserResource>) {
-  return instance.http.request('PUT', '/lol-chat/v1/me', {
+export async function PutLolChatV1Me(connection: Connection, me: Partial<LolChatUserResource>) {
+  return connection.request('PUT', '/lol-chat/v1/me', {
     data: JSON.stringify(me),
-    expectedResponse: 201,
+    expectation: { code: 201 },
   });
 }

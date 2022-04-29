@@ -1,8 +1,8 @@
 /**
- * ClientWebSocket, part of LibLCU.ts
+ * InstanceWebSocket, part of LibLCU.ts
  * Classes and methods to communicate with the League Client through WebSockets
  * @author lotuspar, 2022
- * @file WebSocket.ts
+ * @file InstanceWebSocket.ts
  */
 
 import { WebSocket } from 'ws';
@@ -10,7 +10,7 @@ import Lockfile from '../Lockfile';
 
 export type SubscriptionCallbackFunction = ((...args: any[]) => void) | undefined;
 
-export class ClientWebSocket {
+export default class InstanceWebSocket {
   private lockfile: Lockfile;
 
   private websocket: WebSocket;
@@ -78,7 +78,7 @@ export class ClientWebSocket {
     }
   }
 
-  public static async initialize(lockfile: Lockfile): Promise<ClientWebSocket> {
+  public static async initialize(lockfile: Lockfile): Promise<InstanceWebSocket> {
     return new Promise((resolve, reject) => {
       // Create WebSocket connection
       const websocket = new WebSocket(`wss://${lockfile.host}:${lockfile.port}`, {
@@ -92,7 +92,7 @@ export class ClientWebSocket {
       // Attempt connection to the client
       websocket.on('open', () => {
         // Connection success
-        resolve(new ClientWebSocket(lockfile, websocket));
+        resolve(new InstanceWebSocket(lockfile, websocket));
       });
 
       websocket.on('error', (err) => {

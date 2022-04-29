@@ -4,13 +4,15 @@
  * @author lotuspar, original functions by Riot Games
  */
 
-import Instance from '../../sys/Instance';
-import { LolLootPlayerLoot } from '../generated/LolLootPlayerLoot';
+import Connection from '../../sys/Connection';
+import LolLootPlayerLoot from '../generated/LolLootPlayerLoot';
 
-async function GetLolLootV1PlayerLoot(instance: Instance): Promise<LolLootPlayerLoot[]> {
+async function GetLolLootV1PlayerLoot(connection: Connection): Promise<LolLootPlayerLoot[]> {
   let result: string;
   try {
-    result = await instance.http.request('GET', '/lol-loot/v1/player-loot');
+    result = await connection.request('GET', '/lol-loot/v1/player-loot', {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolLootV1PlayerLoot request error: ${e}`);
   }

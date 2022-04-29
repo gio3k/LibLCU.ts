@@ -6,9 +6,9 @@
  */
 
 import LolLobbyQueueCustomGameSpectatorPolicy from './LolLobbyQueueCustomGameSpectatorPolicy';
-import { LolLobbyQueueGameTypeConfig } from './LolLobbyQueueGameTypeConfig';
+import LolLobbyQueueGameTypeConfig from './LolLobbyQueueGameTypeConfig';
 
-export interface LolLobbyLobbyCustomGameConfiguration {
+export default interface LolLobbyLobbyCustomGameConfiguration {
   mapId: number;
   gameMode: string;
   mutators: LolLobbyQueueGameTypeConfig;

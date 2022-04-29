@@ -5,12 +5,12 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-import { LolLobbyEligibilityRestriction } from './LolLobbyEligibilityRestriction';
-import { LolLobbyLobbyGameConfigDto } from './LolLobbyLobbyGameConfigDto';
-import { LolLobbyLobbyInvitationDto } from './LolLobbyLobbyInvitationDto';
-import { LolLobbyLobbyParticipantDto } from './LolLobbyLobbyParticipantDto';
+import LolLobbyEligibilityRestriction from './LolLobbyEligibilityRestriction';
+import LolLobbyLobbyGameConfigDto from './LolLobbyLobbyGameConfigDto';
+import LolLobbyLobbyInvitationDto from './LolLobbyLobbyInvitationDto';
+import LolLobbyLobbyParticipantDto from './LolLobbyLobbyParticipantDto';
 
-export interface LolLobbyLobbyDto {
+export default interface LolLobbyLobbyDto {
   partyId: string;
   partyType: string;
   members: LolLobbyLobbyParticipantDto[];

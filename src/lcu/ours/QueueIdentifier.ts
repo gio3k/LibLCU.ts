@@ -1,10 +1,10 @@
 /**
- * LobbyQueueId enum
+ * QueueIdentifier enum
  * Accurate as of 27/04/2022
  * @author lotuspar
  */
 
-enum LobbyQueueId {
+enum QueueIdentifier {
   // CLASSIC
   BLIND = 430, // Blind Pick
   DRAFT = 400, // Draft Pick
@@ -31,4 +31,4 @@ enum LobbyQueueId {
   // PRACTICETOOL, CLASSIC
   CUSTOM = -1,
 }
-export default LobbyQueueId;
+export default QueueIdentifier;

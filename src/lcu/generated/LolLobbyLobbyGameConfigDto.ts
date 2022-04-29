@@ -5,10 +5,10 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-import { LolLobbyLobbyParticipantDto } from './LolLobbyLobbyParticipantDto';
+import LolLobbyLobbyParticipantDto from './LolLobbyLobbyParticipantDto';
 import LolLobbyQueueCustomGameSpectatorPolicy from './LolLobbyQueueCustomGameSpectatorPolicy';
 
-export interface LolLobbyLobbyGameConfigDto {
+export default interface LolLobbyLobbyGameConfigDto {
   gameMode: string;
   mapId: number;
   queueId: number;

@@ -7,7 +7,7 @@
 
 import Position from '../ours/Position';
 
-export interface LolLobbyLobbyPositionPreferences {
+export default interface LolLobbyLobbyPositionPreferences {
   firstPreference: Position | string;
   secondPreference: Position | string;
 }

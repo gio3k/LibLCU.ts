@@ -6,9 +6,9 @@
  */
 
 import LolLobbyLobbyBotDifficulty from './LolLobbyLobbyBotDifficulty';
-import { LolLobbyLobbyPositionPreferences } from './LolLobbyLobbyPositionPreferences';
+import LolLobbyLobbyPositionPreferences from './LolLobbyLobbyPositionPreferences';
 
-export interface LolLobbyLobbyMember {
+export default interface LolLobbyLobbyMember {
   id: number;
   isOwner: boolean;
   isSpectator: boolean;

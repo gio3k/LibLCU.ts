@@ -5,10 +5,10 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-import { LolLobbyLobbyCustomGameConfiguration } from './LolLobbyLobbyCustomGameConfiguration';
-import { LolLobbyLobbyMember } from './LolLobbyLobbyMember';
+import LolLobbyLobbyCustomGameConfiguration from './LolLobbyLobbyCustomGameConfiguration';
+import LolLobbyLobbyMember from './LolLobbyLobbyMember';
 
-export interface LolLobbyLobbyCustomGameLobby {
+export default interface LolLobbyLobbyCustomGameLobby {
   lobbyName: string;
   lobbyPassword: string;
   configuration: LolLobbyLobbyCustomGameConfiguration; // LolLobbyLobbyCustomGameConfiguration

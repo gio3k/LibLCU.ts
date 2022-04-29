@@ -7,7 +7,7 @@
 
 import LolLobbyLobbyBotDifficulty from './LolLobbyLobbyBotDifficulty';
 
-export interface LolLobbyLobbyParticipantDto {
+export default interface LolLobbyLobbyParticipantDto {
   summonerId: number;
   summonerIconId: number;
   summonerName: string;

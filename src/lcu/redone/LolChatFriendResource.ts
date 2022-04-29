@@ -5,9 +5,9 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-import { LolChatUserResource } from '../generated/LolChatUserResource';
+import LolChatUserResource from '../generated/LolChatUserResource';
 
-export interface LolChatFriendResource extends LolChatUserResource {
+export default interface LolChatFriendResource extends LolChatUserResource {
   note: string;
   isP2PConversationMuted: boolean;
   groupId: number;

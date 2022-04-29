@@ -5,7 +5,7 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-export interface LolChatBlockedPlayerResource {
+export default interface LolChatBlockedPlayerResource {
   summonerId: number;
   icon: number;
   id: string;

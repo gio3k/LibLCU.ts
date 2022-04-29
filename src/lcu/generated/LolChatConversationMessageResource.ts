@@ -5,7 +5,7 @@
  * @author TypeToType generator by lotuspar, original type by Riot Games
  */
 
-export interface LolChatConversationMessageResource {
+export default interface LolChatConversationMessageResource {
   id: string;
   type: string;
   fromSummonerId: number;

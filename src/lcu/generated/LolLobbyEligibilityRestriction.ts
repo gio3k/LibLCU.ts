@@ -7,7 +7,7 @@
 
 import LolLobbyEligibilityRestrictionCode from './LolLobbyEligibilityRestrictionCode';
 
-export interface LolLobbyEligibilityRestriction {
+export default interface LolLobbyEligibilityRestriction {
   restrictionCode: LolLobbyEligibilityRestrictionCode;
   restrictionArgs: Map<string, string>;
   expiredTimestamp: number;

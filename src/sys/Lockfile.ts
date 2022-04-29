@@ -14,7 +14,7 @@ export default class Lockfile {
 
   private basicAuth: string = '';
 
-  public host: string = '127.0.0.1';
+  public readonly host: string = '127.0.0.1';
 
   constructor(contents: string) {
     /**

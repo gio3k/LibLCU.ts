@@ -4,15 +4,17 @@
  * @author lotuspar, original functions by Riot Games
  */
 
-import Instance from '../../sys/Instance';
-import { LolChatBlockedPlayerResource } from '../generated/LolChatBlockedPlayerResource';
+import Connection from '../../sys/Connection';
+import LolChatBlockedPlayerResource from '../generated/LolChatBlockedPlayerResource';
 
 export async function GetLolChatV1BlockedPlayers(
-  instance: Instance,
+  connection: Connection,
 ): Promise<LolChatBlockedPlayerResource[]> {
   let result: string;
   try {
-    result = await instance.http.request('GET', '/lol-chat/v1/blocked-players', { expectedResponse: 200 });
+    result = await connection.request('GET', '/lol-chat/v1/blocked-players', {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolChatV1BlockedPlayers request error: ${e}`);
   }
@@ -20,31 +22,33 @@ export async function GetLolChatV1BlockedPlayers(
 }
 
 export async function PostLolChatV1BlockedPlayers(
-  instance: Instance,
+  connection: Connection,
   blocked: LolChatBlockedPlayerResource,
 ) {
-  return instance.http.request('POST', '/lol-chat/v1/blocked-players', {
+  return connection.request('POST', '/lol-chat/v1/blocked-players', {
     data: JSON.stringify(blocked),
-    expectedResponse: 204,
+    expectation: { code: 204 },
   });
 }
 
 export async function DeleteLolChatV1BlockedPlayersById(
-  instance: Instance,
+  connection: Connection,
   id: string,
 ) {
-  return instance.http.request('DELETE', `/lol-chat/v1/blocked-players/${id}`, {
-    expectedResponse: 204,
+  return connection.request('DELETE', `/lol-chat/v1/blocked-players/${id}`, {
+    expectation: { code: 204 },
   });
 }
 
 export async function GetLolChatV1BlockedPlayersById(
-  instance: Instance,
+  connection: Connection,
   id: string,
 ): Promise<LolChatBlockedPlayerResource> {
   let result: string;
   try {
-    result = await instance.http.request('GET', `/lol-chat/v1/blocked-players/${id}`, { expectedResponse: 200 });
+    result = await connection.request('GET', `/lol-chat/v1/blocked-players/${id}`, {
+      expectation: { code: 200 },
+    });
   } catch (e) {
     throw new Error(`GetLolChatV1BlockedPlayersById request error: ${e}`);
   }
