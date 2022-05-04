@@ -5,6 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
+import { RequestError } from '../../sys/tx/HTTPUtils';
 import LolChatUserResource from '../generated/LolChatUserResource';
 
 export async function GetLolChatV1Me(connection: Connection): Promise<LolChatUserResource> {
@@ -13,15 +14,23 @@ export async function GetLolChatV1Me(connection: Connection): Promise<LolChatUse
     result = await connection.request('GET', '/lol-chat/v1/me', {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolChatV1Me request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolChatV1Me request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
 
 export async function PutLolChatV1Me(connection: Connection, me: Partial<LolChatUserResource>) {
-  return connection.request('PUT', '/lol-chat/v1/me', {
-    data: JSON.stringify(me),
-    expectation: { code: 201 },
-  });
+  try {
+    await connection.request('PUT', '/lol-chat/v1/me', {
+      data: JSON.stringify(me),
+      expectation: { code: 201 },
+    });
+  } catch (e: any) {
+    if (e.code === 451) {
+      throw new RequestError("Status message can't contain offensive words.", e.code);
+    }
+
+    throw new RequestError(`Unknown PutLolChatV1Me error: ${e.message}`, e.code);
+  }
 }

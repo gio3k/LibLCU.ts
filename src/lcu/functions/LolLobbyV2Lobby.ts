@@ -9,6 +9,7 @@ import LolLobbyLobbyDto from '../generated/LolLobbyLobbyDto';
 import LolLobbyLobbyChangeGameDto from '../generated/LolLobbyLobbyChangeGameDto';
 import LolLobbyLobbyInvitationDto from '../generated/LolLobbyLobbyInvitationDto';
 import LolLobbyLobbyPositionPreferences from '../generated/LolLobbyLobbyPositionPreferences';
+import { RequestError } from '../../sys/tx/HTTPUtils';
 
 export async function GetLolLobbyV2Lobby(connection: Connection): Promise<LolLobbyLobbyDto> {
   const result = await connection.request('GET', '/lol-lobby/v2/lobby', {
@@ -27,8 +28,8 @@ export async function PostLolLobbyV2Lobby(
       data: JSON.stringify(lobbyChange),
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`PostLolLobbyV2Lobby request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`PostLolLobbyV2Lobby request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
@@ -59,8 +60,8 @@ export async function GetLolLobbyV2LobbyInvitations(
     result = await connection.request('GET', '/lol-lobby/v2/lobby/invitations', {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolLobbyV2LobbyInvitations request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolLobbyV2LobbyInvitations request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
@@ -75,8 +76,8 @@ export async function PostLolLobbyV2LobbyInvitations(
       data: JSON.stringify(invitations),
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`PostLolLobbyV2LobbyInvitations request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`PostLolLobbyV2LobbyInvitations request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }

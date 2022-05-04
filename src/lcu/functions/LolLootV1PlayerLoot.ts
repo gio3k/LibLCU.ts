@@ -5,6 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
+import { RequestError } from '../../sys/tx/HTTPUtils';
 import LolLootPlayerLoot from '../generated/LolLootPlayerLoot';
 
 async function GetLolLootV1PlayerLoot(connection: Connection): Promise<LolLootPlayerLoot[]> {
@@ -13,8 +14,8 @@ async function GetLolLootV1PlayerLoot(connection: Connection): Promise<LolLootPl
     result = await connection.request('GET', '/lol-loot/v1/player-loot', {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolLootV1PlayerLoot request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolLootV1PlayerLoot request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }

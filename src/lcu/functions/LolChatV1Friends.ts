@@ -5,6 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
+import { RequestError } from '../../sys/tx/HTTPUtils';
 import LolChatFriendResource from '../redone/LolChatFriendResource';
 
 export async function GetLolChatV1Friends(
@@ -15,8 +16,8 @@ export async function GetLolChatV1Friends(
     result = await connection.request('GET', '/lol-chat/v1/friends', {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolChatV1Friends request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolChatV1Friends request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
@@ -30,8 +31,8 @@ export async function GetLolChatV1FriendsById(
     result = await connection.request('GET', `/lol-chat/v1/friends/${id}`, {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolChatV1FriendsById request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolChatV1FriendsById request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
@@ -41,7 +42,7 @@ export async function DeleteLolChatV1FriendsById(
   id: string,
 ) {
   return connection.request('DELETE', `/lol-chat/v1/friends/${id}`, {
-    expectation: { code: 200 },
+    expectation: { code: 204 },
   });
 }
 

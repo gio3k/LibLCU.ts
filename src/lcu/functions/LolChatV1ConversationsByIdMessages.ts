@@ -5,6 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
+import { RequestError } from '../../sys/tx/HTTPUtils';
 import LolChatConversationMessageResource from '../generated/LolChatConversationMessageResource';
 
 export async function GetLolChatV1ConversationsByIdMessages(
@@ -16,8 +17,8 @@ export async function GetLolChatV1ConversationsByIdMessages(
     result = await connection.request('GET', `/lol-chat/v1/conversations/${id}/messages`, {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolChatV1ConversationsByIdMessages request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolChatV1ConversationsByIdMessages request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
@@ -33,8 +34,8 @@ export async function PostLolChatV1ConversationsByIdMessages(
       data: JSON.stringify(message),
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`PostLolChatV1ConversationsByIdMessages request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`PostLolChatV1ConversationsByIdMessages request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }

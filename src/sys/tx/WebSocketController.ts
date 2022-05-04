@@ -1,84 +1,60 @@
 /**
- * InstanceWebSocket, part of LibLCU.ts
+ * WebSocketController, part of LibLCU.ts
  * Classes and methods to communicate with the League Client through WebSockets
  * @author lotuspar, 2022
- * @file InstanceWebSocket.ts
+ * @file WebSocketController.ts
  */
 
-import { WebSocket } from 'ws';
+import { RawData, WebSocket } from 'ws';
+import CallbackHandler, { BasicCallback } from '../CallbackHandler';
 import Lockfile from '../Lockfile';
 
-export type SubscriptionCallbackFunction = ((...args: any[]) => void) | undefined;
-
-export default class InstanceWebSocket {
+export default class WebSocketController {
   private lockfile: Lockfile;
 
   private websocket: WebSocket;
 
-  private subscriptions: Map<string, SubscriptionCallbackFunction[]>;
+  private callbacks: CallbackHandler;
 
   private constructor(lockfile: Lockfile, websocket: WebSocket) {
     this.lockfile = lockfile;
     this.websocket = websocket;
 
-    this.subscriptions = new Map<string, SubscriptionCallbackFunction[]>();
+    this.callbacks = new CallbackHandler();
+    this.callbacks.setOnEmptyKeyEvent((key) => {
+      this.websocket.send(`Unsubscribe ${key}`);
+    });
 
-    // Initialize receive function
-    this.websocket.on('message', (data) => {
-      if (data == null || `${data}` === '') {
-        return;
-      }
+    this.websocket.on('message', (data) => this.receive(data));
+  }
 
-      const json = JSON.parse(`${data}`);
-      const keys = Object.keys(json);
+  private receive(data: RawData) {
+    if (data == null || `${data}` === '') {
+      return;
+    }
 
-      if (keys == null) {
-        console.log(`keys == null unknown ${data}`);
-        return;
-      }
+    let json: any;
+    try {
+      json = JSON.parse(`${data}`);
+    } catch (e) {
+      throw new Error(`Failed to parse received event data. (${e})`);
+    }
 
-      keys.forEach((key) => {
-        const value = json[key];
-
-        // Get callback functions for this event
-        const callbacks: SubscriptionCallbackFunction[] | undefined = this.subscriptions.get(key);
-        if (typeof callbacks === 'undefined') {
-          return;
-        }
-
-        // Call functions
-        callbacks.forEach((callback) => {
-          if (typeof callback !== 'undefined') {
-            callback(value);
-          }
-        });
-      });
+    Object.keys(json)?.forEach((key: string) => {
+      const value = json[key];
+      this.callbacks.call(key, value);
     });
   }
 
-  public subscribe(name: string, callback: SubscriptionCallbackFunction) {
-    // Subscribe to event
+  public subscribe(name: string, callback: BasicCallback) {
+    // Subscribe websocket client to event
     this.websocket.send(`Subscribe ${name}`);
 
-    // Make sure we can add callbacks
-    if (!this.subscriptions.has(name)) {
-      this.subscriptions.set(name, []);
-    }
-
-    // Add event
-    const array: SubscriptionCallbackFunction[] | undefined = this.subscriptions.get(name);
-    if (typeof array !== 'undefined') {
-      array.push(callback);
-    }
+    // Add callback
+    this.callbacks.add(name, callback);
   }
 
-  public clear(name: string) {
-    if (this.subscriptions.has(name)) {
-      this.subscriptions.delete(name);
-    }
-  }
-
-  public static async initialize(lockfile: Lockfile): Promise<InstanceWebSocket> {
+  public static async initialize(lockfile: Lockfile): Promise<WebSocketController> {
     return new Promise((resolve, reject) => {
       // Create WebSocket connection
       const websocket = new WebSocket(`wss://${lockfile.host}:${lockfile.port}`, {
@@ -92,7 +68,7 @@ export default class InstanceWebSocket {
       // Attempt connection to the client
       websocket.on('open', () => {
         // Connection success
-        resolve(new InstanceWebSocket(lockfile, websocket));
+        resolve(new WebSocketController(lockfile, websocket));
       });
 
       websocket.on('error', (err) => {

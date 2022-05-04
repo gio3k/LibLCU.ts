@@ -6,13 +6,16 @@
 
 enum QueueIdentifier {
   // CLASSIC
-  BLIND = 430, // Blind Pick
   DRAFT = 400, // Draft Pick
   RANKED_SOLO_DUO = 420, // Ranked Solo/Duo
+  BLIND = 430, // Blind Pick
   RANKED_FLEX = 440, // Ranked Flex
 
   // ARAM
   ARAM = 450, // All Random All Mid, ARAM
+
+  // CLASSIC
+  CLASH = 700, // Clash
 
   // CLASSIC
   COOP_BOTS_INTRO = 830, // Co-Op vs AI - Intro

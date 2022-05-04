@@ -5,6 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
+import { RequestError } from '../../sys/tx/HTTPUtils';
 import LolChatBlockedPlayerResource from '../generated/LolChatBlockedPlayerResource';
 
 export async function GetLolChatV1BlockedPlayers(
@@ -15,8 +16,8 @@ export async function GetLolChatV1BlockedPlayers(
     result = await connection.request('GET', '/lol-chat/v1/blocked-players', {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolChatV1BlockedPlayers request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolChatV1BlockedPlayers request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }
@@ -49,8 +50,8 @@ export async function GetLolChatV1BlockedPlayersById(
     result = await connection.request('GET', `/lol-chat/v1/blocked-players/${id}`, {
       expectation: { code: 200 },
     });
-  } catch (e) {
-    throw new Error(`GetLolChatV1BlockedPlayersById request error: ${e}`);
+  } catch (e: any) {
+    throw new RequestError(`GetLolChatV1BlockedPlayersById request error: ${e}`, e.code);
   }
   return JSON.parse(result);
 }

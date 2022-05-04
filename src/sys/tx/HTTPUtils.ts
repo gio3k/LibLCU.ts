@@ -11,7 +11,6 @@ import Lockfile from '../Lockfile';
 
 export type RequestExtraParams = {
   data?: string;
-  charset?: string;
   extraHeaders?: object;
   expectation?: ResponseExpectation;
 };
@@ -19,6 +18,15 @@ export type RequestExtraParams = {
 export interface ResponseExpectation {
   code: number;
   contents?: string;
+}
+
+export class RequestError extends Error {
+  public code: number;
+
+  constructor(message: string, code: number) {
+    super(message);
+    this.code = code;
+  }
 }
 
 const rejectUnauthorized = false; // we need this, LCU uses a self-signed certificate
@@ -35,7 +43,6 @@ export async function clientBackendRequest(
       method,
       path,
       headers: {
-        Charset: extra.charset,
         Authorization: lockfile.basic,
         ...extra.extraHeaders || {},
       },
@@ -44,7 +51,12 @@ export async function clientBackendRequest(
       rejectUnauthorized,
     }, (result: IncomingMessage) => {
       if (extra.expectation?.code !== result.statusCode) {
-        reject(new Error(`Unexpected response ${result.statusMessage} ${result.statusCode}`));
+        console.error(`code ${result.statusCode} trying to ${method} ${path}`);
+        console.error(`data ${extra.data}`);
+        reject(new RequestError(
+          `Unexpected response ${result.statusMessage} ${result.statusCode}`,
+          result.statusCode ?? 0,
+        ));
       }
 
       result.on('data', (packet) => {
@@ -54,8 +66,8 @@ export async function clientBackendRequest(
 
       result.on('end', () => {
         // this is called when no more response active
-        if (extra.expectation?.contents === buffer) {
-          reject(new Error(`Unexpected response content ${buffer} (needed ${extra.expectation.contents})`));
+        if (extra.expectation?.contents !== undefined && buffer !== extra.expectation?.contents) {
+          reject(new Error(`Unexpected response content ${buffer}`));
         }
         resolve(buffer);
       });
