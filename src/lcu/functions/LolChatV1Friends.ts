@@ -5,7 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
-import { RequestError } from '../../sys/tx/HTTPUtils';
+import { RequestError } from '../../sys/HTTPUtils';
 import LolChatFriendResource from '../redone/LolChatFriendResource';
 
 export async function GetLolChatV1Friends(

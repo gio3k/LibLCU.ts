@@ -4,6 +4,7 @@
  * @author lotuspar, 2022
  */
 
+
 import LolChatUserResource from '../../lcu/generated/LolChatUserResource';
 import Connection from '../../sys/Connection';
 import { KnownUser } from './UserTypes';

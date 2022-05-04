@@ -1,13 +1,13 @@
 /**
  * Connection, part of LibLCU.ts
- * Controller and manager for connection to the League Client
+ * Controller and manager handling connection to the League Client
  * @author lotuspar, 2022
  * @file Connection.ts
  */
 
 import Lockfile from './Lockfile';
-import { RequestExtraParams, clientBackendRequest } from './tx/HTTPUtils';
-import WebSocketController from './tx/WebSocketController';
+import { RequestExtraParams, clientBackendRequest } from './HTTPUtils';
+import WebSocketController from './WebSocketController';
 
 export default class Connection {
   private lockfile: Lockfile;

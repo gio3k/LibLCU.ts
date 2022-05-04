@@ -5,7 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
-import { RequestError } from '../../sys/tx/HTTPUtils';
+import { RequestError } from '../../sys/HTTPUtils';
 import LolChatUserResource from '../generated/LolChatUserResource';
 
 export async function GetLolChatV1Me(connection: Connection): Promise<LolChatUserResource> {

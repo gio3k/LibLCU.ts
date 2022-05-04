@@ -5,7 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
-import { RequestError } from '../../sys/tx/HTTPUtils';
+import { RequestError } from '../../sys/HTTPUtils';
 import LolLootPlayerLoot from '../generated/LolLootPlayerLoot';
 
 async function GetLolLootV1PlayerLoot(connection: Connection): Promise<LolLootPlayerLoot[]> {

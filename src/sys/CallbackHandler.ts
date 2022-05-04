@@ -1,3 +1,10 @@
+/**
+ * CallbackHandler, part of LibLCU.ts
+ * Class / base class for callback handling / callback handling functionality
+ * @author lotuspar, 2022
+ * @file CallbackHandler.ts
+ */
+
 export type BasicCallback = ((...args: any[]) => void);
 export type CallbackMap = Map<string, WeakRef<BasicCallback>[]>;
 

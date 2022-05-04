@@ -5,7 +5,7 @@
  */
 
 import Connection from '../../sys/Connection';
-import { RequestError } from '../../sys/tx/HTTPUtils';
+import { RequestError } from '../../sys/HTTPUtils';
 import LolChatConversationMessageResource from '../generated/LolChatConversationMessageResource';
 
 export async function GetLolChatV1ConversationsByIdMessages(

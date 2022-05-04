@@ -6,8 +6,8 @@
  */
 
 import { RawData, WebSocket } from 'ws';
-import CallbackHandler, { BasicCallback } from '../CallbackHandler';
-import Lockfile from '../Lockfile';
+import CallbackHandler, { BasicCallback } from './CallbackHandler';
+import Lockfile from './Lockfile';
 
 export default class WebSocketController {
   private lockfile: Lockfile;

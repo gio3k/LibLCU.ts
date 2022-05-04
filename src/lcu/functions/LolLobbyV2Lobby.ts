@@ -9,7 +9,7 @@ import LolLobbyLobbyDto from '../generated/LolLobbyLobbyDto';
 import LolLobbyLobbyChangeGameDto from '../generated/LolLobbyLobbyChangeGameDto';
 import LolLobbyLobbyInvitationDto from '../generated/LolLobbyLobbyInvitationDto';
 import LolLobbyLobbyPositionPreferences from '../generated/LolLobbyLobbyPositionPreferences';
-import { RequestError } from '../../sys/tx/HTTPUtils';
+import { RequestError } from '../../sys/HTTPUtils';
 
 export async function GetLolLobbyV2Lobby(connection: Connection): Promise<LolLobbyLobbyDto> {
   const result = await connection.request('GET', '/lol-lobby/v2/lobby', {
