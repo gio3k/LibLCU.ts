@@ -4,6 +4,7 @@
  * @author lotuspar, original functions by Riot Games
  */
 
+import { PartialDeep } from 'type-fest';
 import Connection from '../../sys/Connection';
 import { RequestError } from '../../sys/HTTPUtils';
 import LolChatConversationMessageResource from '../generated/LolChatConversationMessageResource';
@@ -26,7 +27,7 @@ export async function GetLolChatV1ConversationsByIdMessages(
 export async function PostLolChatV1ConversationsByIdMessages(
   connection: Connection,
   id: string,
-  message: Partial<LolChatConversationMessageResource>,
+  message: PartialDeep<LolChatConversationMessageResource>,
 ): Promise<LolChatConversationMessageResource> {
   let result: string;
   try {

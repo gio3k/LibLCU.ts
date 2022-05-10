@@ -4,6 +4,7 @@
  * @author lotuspar, original functions by Riot Games
  */
 
+import { PartialDeep } from 'type-fest';
 import Connection from '../../sys/Connection';
 import LolLobbyLobbyDto from '../generated/LolLobbyLobbyDto';
 import LolLobbyLobbyChangeGameDto from '../generated/LolLobbyLobbyChangeGameDto';
@@ -20,7 +21,7 @@ export async function GetLolLobbyV2Lobby(connection: Connection): Promise<LolLob
 
 export async function PostLolLobbyV2Lobby(
   connection: Connection,
-  lobbyChange: Partial<LolLobbyLobbyChangeGameDto>,
+  lobbyChange: PartialDeep<LolLobbyLobbyChangeGameDto>,
 ): Promise<LolLobbyLobbyDto> {
   let result: string;
   try {
@@ -68,7 +69,7 @@ export async function GetLolLobbyV2LobbyInvitations(
 
 export async function PostLolLobbyV2LobbyInvitations(
   connection: Connection,
-  invitations: Partial<LolLobbyLobbyInvitationDto>[],
+  invitations: PartialDeep<LolLobbyLobbyInvitationDto>[],
 ): Promise<LolLobbyLobbyDto> {
   let result: string;
   try {

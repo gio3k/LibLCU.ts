@@ -4,6 +4,7 @@
  * @author lotuspar, original functions by Riot Games
  */
 
+import { PartialDeep } from 'type-fest';
 import Connection from '../../sys/Connection';
 import { RequestError } from '../../sys/HTTPUtils';
 import LolChatUserResource from '../generated/LolChatUserResource';
@@ -20,7 +21,7 @@ export async function GetLolChatV1Me(connection: Connection): Promise<LolChatUse
   return JSON.parse(result);
 }
 
-export async function PutLolChatV1Me(connection: Connection, me: Partial<LolChatUserResource>) {
+export async function PutLolChatV1Me(connection: Connection, me: PartialDeep<LolChatUserResource>) {
   try {
     await connection.request('PUT', '/lol-chat/v1/me', {
       data: JSON.stringify(me),

@@ -4,6 +4,7 @@
  * @author lotuspar, original functions by Riot Games
  */
 
+import { PartialDeep } from 'type-fest';
 import Connection from '../../sys/Connection';
 import { RequestError } from '../../sys/HTTPUtils';
 import LolChatFriendResource from '../redone/LolChatFriendResource';
@@ -49,7 +50,7 @@ export async function DeleteLolChatV1FriendsById(
 export async function PutLolChatV1FriendsById(
   connection: Connection,
   id: string,
-  contact: Partial<LolChatFriendResource>,
+  contact: PartialDeep<LolChatFriendResource>,
 ) {
   return connection.request('PUT', `/lol-chat/v1/friends/${id}`, {
     data: JSON.stringify(contact),
