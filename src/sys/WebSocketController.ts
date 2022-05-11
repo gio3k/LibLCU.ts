@@ -6,7 +6,7 @@
  */
 
 import { RawData, WebSocket } from 'ws';
-import CallbackHandler, { BasicCallback } from './CallbackHandler';
+import EventDistributor, { EventDistributorEvent } from './EventDistributor';
 import Lockfile from './Lockfile';
 
 export default class WebSocketController {
@@ -14,14 +14,14 @@ export default class WebSocketController {
 
   private websocket: WebSocket;
 
-  private callbacks: CallbackHandler;
+  private callbacks: EventDistributor;
 
   private constructor(lockfile: Lockfile, websocket: WebSocket) {
     this.lockfile = lockfile;
     this.websocket = websocket;
 
-    this.callbacks = new CallbackHandler();
-    this.callbacks.setOnEmptyKeyEvent((key) => {
+    this.callbacks = new EventDistributor();
+    this.callbacks.on(EventDistributorEvent.EVENT_KEY_REMOVED, (key: string) => {
       this.websocket.send(`Unsubscribe ${key}`);
     });
 
@@ -46,12 +46,12 @@ export default class WebSocketController {
     });
   }
 
-  public subscribe(name: string, callback: BasicCallback) {
+  public subscribe(name: string, callback: (...args: any) => void) {
     // Subscribe websocket client to event
     this.websocket.send(`Subscribe ${name}`);
 
     // Add callback
-    this.callbacks.add(name, callback);
+    this.callbacks.on(name, callback, true);
   }
 
   public static async initialize(lockfile: Lockfile): Promise<WebSocketController> {
