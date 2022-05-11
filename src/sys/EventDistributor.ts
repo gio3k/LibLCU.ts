@@ -4,6 +4,7 @@
  * @author lotuspar, 2022
  * @file EventDistributor.ts
  */
+
 type Callback = (...args: any[]) => void;
 
 export enum EventDistributorEvent {
@@ -17,6 +18,9 @@ export default class EventDistributor {
   private finalizer: FinalizationRegistry<string | EventDistributorEvent>;
 
   private dirty: (string | EventDistributorEvent)[] = [];
+
+  // Changes type of reference being make when none provided
+  public assumeWeak: boolean = false;
 
   // Amount of keys in the dirty array to hold before forcing a clean
   public forceCleanThreshold: number = 3;
@@ -38,13 +42,13 @@ export default class EventDistributor {
    * @param callback Event callback
    * @param weak Store callback reference weakly? (lets the callback be GCd)
    */
-  public on(key: string | EventDistributorEvent, callback: Callback, weak: boolean = false): void {
+  public on(key: string | EventDistributorEvent, callback: Callback, weak?: boolean): void {
     if (!this.events.has(key)) {
       this.events.set(key, []);
     }
 
     this.finalizer.register(callback, key);
-    this.events.get(key)!.push(weak ? new WeakRef(callback) : callback);
+    this.events.get(key)!.push((weak || this.assumeWeak) ? new WeakRef(callback) : callback);
   }
 
   /**
