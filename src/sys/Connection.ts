@@ -6,7 +6,7 @@
  */
 
 import Lockfile from './Lockfile';
-import { RequestExtraParams, clientBackendRequest } from './HTTPUtils';
+import { RequestExtraParams, clientBackendRequest } from './RequestUtils';
 import WebSocketController from './WebSocketController';
 
 export default class Connection {

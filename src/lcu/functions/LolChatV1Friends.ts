@@ -6,7 +6,7 @@
 
 import { PartialDeep } from 'type-fest';
 import Connection from '../../sys/Connection';
-import { RequestError } from '../../sys/HTTPUtils';
+import { RequestError } from '../../sys/RequestUtils';
 import LolChatFriendResource from '../redone/LolChatFriendResource';
 
 export async function GetLolChatV1Friends(

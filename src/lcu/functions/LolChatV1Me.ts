@@ -6,7 +6,7 @@
 
 import { PartialDeep } from 'type-fest';
 import Connection from '../../sys/Connection';
-import { RequestError } from '../../sys/HTTPUtils';
+import { RequestError } from '../../sys/RequestUtils';
 import LolChatUserResource from '../generated/LolChatUserResource';
 
 export async function GetLolChatV1Me(connection: Connection): Promise<LolChatUserResource> {
