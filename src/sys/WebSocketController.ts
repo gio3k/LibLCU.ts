@@ -6,7 +6,7 @@
  */
 
 import { RawData, WebSocket } from 'ws';
-import EventDistributor, { EventDistributorEvent } from './EventDistributor';
+import EventDistributor, { EventDistributorEvents } from './EventDistributor';
 import Lockfile from './Lockfile';
 
 export default class WebSocketController extends EventDistributor {
@@ -20,7 +20,7 @@ export default class WebSocketController extends EventDistributor {
     this.websocket = websocket;
 
     this.eventDistributorSettings.enforceEventRegistration = false;
-    this.on(EventDistributorEvent.EVENT_KEY_REMOVED, (key: string) => {
+    this.on(EventDistributorEvents.EVENT_KEY_REMOVED, (key: string) => {
       this.websocket.send(`Unsubscribe ${key}`);
     });
 

@@ -6,18 +6,20 @@
  */
 
 type Callback = (...args: any[]) => void;
+type EventKey = (string);
 
-export enum EventDistributorEvent {
-  CLEAN = 300,
-  EVENT_KEY_REMOVED = 301,
+enum Events {
+  CLEAN = '_event_distributor_clean',
+  EVENT_KEY_REMOVED = '_event_distributor_ekr',
 }
+export { Events as EventDistributorEvents };
 
 export default class EventDistributor {
-  private events: Map<string | EventDistributorEvent, (WeakRef<Callback> | Callback)[]>;
+  private events: Map<EventKey, (WeakRef<Callback> | Callback)[]>;
 
-  private finalizer: FinalizationRegistry<string | EventDistributorEvent>;
+  private finalizer: FinalizationRegistry<EventKey>;
 
-  private dirty: (string | EventDistributorEvent)[] = [];
+  private dirty: EventKey[] = [];
 
   public eventDistributorSettings = {
     // Requires keys to be registered
@@ -32,11 +34,13 @@ export default class EventDistributor {
 
   constructor() {
     this.events = new Map();
-    this.finalizer = new FinalizationRegistry((key: string | EventDistributorEvent) => {
+    this.finalizer = new FinalizationRegistry((key: EventKey) => {
       this.pushDirty(key);
     });
 
-    this.on(EventDistributorEvent.CLEAN, () => {
+    this.registerEvents(Object.values(Events));
+
+    this.on(Events.CLEAN, () => {
       this.clean();
     });
   }
@@ -45,7 +49,7 @@ export default class EventDistributor {
    * Register events
    * @param keys Event keys to register
    */
-  public registerEvents(keys: (string | EventDistributorEvent)[]) {
+  public registerEvents(keys: EventKey[]) {
     keys.forEach((key) => {
       if (!this.events.has(key)) {
         this.events.set(key, []);
@@ -67,7 +71,7 @@ export default class EventDistributor {
    * @param callback Event callback
    * @param weak Store callback reference weakly? (lets the callback be GCd)
    */
-  public on(key: string | EventDistributorEvent, callback: Callback, weak?: boolean): void {
+  public on(key: EventKey, callback: Callback, weak?: boolean): void {
     if (!this.events.has(key)) {
       if (this.eventDistributorSettings.enforceEventRegistration) {
         throw new Error(`Unknown event key ${key}`);
@@ -86,7 +90,7 @@ export default class EventDistributor {
    * @param key Event key
    * @param args Event args
    */
-  public call(key: string | EventDistributorEvent, ...args: any[]): void {
+  public call(key: EventKey, ...args: any[]): void {
     this.events.get(key)?.forEach((callback) => {
       if (!(callback instanceof WeakRef)) {
         callback(args);
@@ -111,7 +115,7 @@ export default class EventDistributor {
 
     // For each dirty event name...
     // note: the Set stops duplicate keys from being cleaned
-    [...new Set(this.dirty)].forEach((dirtyKey: string | EventDistributorEvent) => {
+    [...new Set(this.dirty)].forEach((dirtyKey: EventKey) => {
       // Make sure event exists...
       if (this.events.has(dirtyKey)) {
         // Event exists.
@@ -130,7 +134,7 @@ export default class EventDistributor {
         if (cleaned.length === 0) {
           // No callbacks after clean
           // First call key empty event:
-          this.call(EventDistributorEvent.EVENT_KEY_REMOVED, dirtyKey);
+          this.call(Events.EVENT_KEY_REMOVED, dirtyKey);
 
           // Remove callback key from map
           this.events.delete(dirtyKey);
@@ -143,10 +147,10 @@ export default class EventDistributor {
     });
   }
 
-  private pushDirty(key: string | EventDistributorEvent) {
+  private pushDirty(key: EventKey) {
     this.dirty.push(key);
     if (this.dirty.length >= this.eventDistributorSettings.forceCleanThreshold) {
-      this.call(EventDistributorEvent.CLEAN);
+      this.call(Events.CLEAN);
     }
   }
 }
