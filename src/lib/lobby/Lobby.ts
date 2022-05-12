@@ -18,7 +18,8 @@ import Connection from '../../sys/Connection';
 import Activity from '../Activity';
 
 export enum Events {
-  READY_CHECK = 'ready_check',
+  ReadyCheck = 'lobby_ready_check',
+  Update = 'lobby_update',
 }
 
 export default class Lobby extends Activity {
@@ -50,10 +51,9 @@ export default class Lobby extends Activity {
 
     if (eventType === 'Update' && uri === '/lol-lobby/v2/lobby') {
       this.resource = data;
+      this.call(Events.Update, data);
       return;
     }
-    //console.log(this);
-    //console.log(eventType, data, uri);
   };
 
   /**

@@ -9,8 +9,8 @@ type Callback = (...args: any[]) => void;
 type EventKey = (string);
 
 enum Events {
-  CLEAN = '_event_distributor_clean',
-  EVENT_KEY_REMOVED = '_event_distributor_ekr',
+  Clean = '_event_distributor_clean',
+  EventKeyRemoved = '_event_distributor_ekr',
 }
 export { Events as EventDistributorEvents };
 
@@ -40,7 +40,7 @@ export default class EventDistributor {
 
     this.registerEvents(Object.values(Events));
 
-    this.on(Events.CLEAN, () => {
+    this.on(Events.Clean, () => {
       this.clean();
     });
   }
@@ -134,7 +134,7 @@ export default class EventDistributor {
         if (cleaned.length === 0) {
           // No callbacks after clean
           // First call key empty event:
-          this.call(Events.EVENT_KEY_REMOVED, dirtyKey);
+          this.call(Events.EventKeyRemoved, dirtyKey);
 
           // Remove callback key from map
           this.events.delete(dirtyKey);
@@ -150,7 +150,7 @@ export default class EventDistributor {
   private pushDirty(key: EventKey) {
     this.dirty.push(key);
     if (this.dirty.length >= this.eventDistributorSettings.forceCleanThreshold) {
-      this.call(Events.CLEAN);
+      this.call(Events.Clean);
     }
   }
 }
