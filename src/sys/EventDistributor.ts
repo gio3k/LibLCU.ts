@@ -93,13 +93,13 @@ export default class EventDistributor {
   public call(key: EventKey, ...args: any[]): void {
     this.events.get(key)?.forEach((callback) => {
       if (!(callback instanceof WeakRef)) {
-        callback(args);
+        callback(...args);
       } else {
         const deref = callback.deref();
         if (deref === undefined) {
           this.pushDirty(key);
         } else {
-          deref(args);
+          deref(...args);
         }
       }
     });
