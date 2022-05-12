@@ -1,57 +1,39 @@
-import { GetLolLobbyV2Lobby, PostLolLobbyV2Lobby } from '../../lcu/functions/LolLobbyV2Lobby';
+/**
+ * Lobby
+ * Lobby current instance functions
+ *
+ * For LibLCU.ts (https://github.com/lotuspar/liblcu.ts)
+ * @author lotuspar, 2022
+ */
+
+import {
+  GetLolLobbyV2Lobby,
+  PostLolLobbyV2Lobby,
+  PutLolLobbyV2LobbyMembersLocalMemberPositionPreferences,
+} from '../../lcu/functions/LolLobbyV2Lobby';
 import LolLobbyLobbyDto from '../../lcu/generated/LolLobbyLobbyDto';
+import LolLobbyLobbyPositionPreferences from '../../lcu/generated/LolLobbyLobbyPositionPreferences';
 import QueueIdentifier from '../../lcu/ours/QueueIdentifier';
 import Connection from '../../sys/Connection';
-import Chatroom from '../chat/Chatroom';
-import CallbackHandler, { BasicCallback } from '../../sys/CallbackHandler';
+import Activity from '../Activity';
 
-export default class Lobby {
-  protected readonly connection: Connection;
+export enum Events {
+  READY_CHECK = 'ready_check',
+}
 
-  protected resource: any;
+export default class Lobby extends Activity {
+  resource: LolLobbyLobbyDto;
 
-  private lobby: LolLobbyLobbyDto;
-
-  private callbacks: CallbackHandler; // searchstate, matchmaking, readycheck
-
-  public readonly chatroom: Chatroom | null;
-
-  constructor(
-    connection: Connection,
-    resource: LolLobbyLobbyDto,
-  ) {
-    this.connection = connection;
+  constructor(connection: Connection, resource: LolLobbyLobbyDto) {
+    super(connection);
     this.resource = resource;
-    this.lobby = this.resource;
 
-    this.connection.websocket.subscribe('OnJsonApiEvent_lol-lobby_v2_lobby', this.update);
-    this.connection.websocket.subscribe('OnJsonApiEvent_lol-lobby-team-builder_v1_matchmaking', this.update);
+    this.registerEvents(Object.values(Events));
 
-    this.callbacks = new CallbackHandler();
-
-    try {
-      this.chatroom = new Chatroom(connection, this.lobby.chatRoomId);
-    } catch (e: any) {
-      if (e.code !== 404) {
-        throw new Error(`Failed to get lobby chatroom! ${e}`);
-      }
-      this.chatroom = null;
-    }
+    this.connection.subscribe('OnJsonApiEvent_lol-lobby_v2_lobby', this.update);
+    this.connection.subscribe('OnJsonApiEvent_lol-lobby-team-builder_v1_matchmaking', this.update);
   }
 
-  /**
-   * Add event handler
-   * @param event Event to handle
-   * @param callback Event handler
-   */
-  public on(event: string, callback: BasicCallback) {
-    this.callbacks.add(event, callback);
-  }
-
-  /**
-   * Update lobby from WebSocket event
-   * @param param0 Event params
-   */
   private update = ({ eventType, data, uri }: { eventType: any, data: any, uri: string }) => {
     // /lol-lobby/v2/lobby
     //   LolLobbyLobbyDto
@@ -70,74 +52,84 @@ export default class Lobby {
       this.resource = data;
       return;
     }
-
-    if (eventType === 'Update' && uri === '/lol-lobby/v2/lobby/members') {
-      this.lobby.members = data;
-      return;
-    }
-
-    if (eventType === 'Update' && uri === '/lol-lobby/v2/lobby/matchmaking/search-state') {
-      return;
-    }
-
-    if (eventType === 'Update' && uri === '/lol-lobby-team-builder/v1/matchmaking') {
-      return;
-    }
-
-    if (uri === '/lol-lobby/v2/lobby/custom/available-bots' || uri === '/lol-lobby/v2/lobby/custom/bots-enabled') {
-      return;
-    }
-
-    console.warn(`Unknown lobby event ${eventType} ${uri}`);
-    console.log(data);
+    //console.log(this);
+    //console.log(eventType, data, uri);
   };
 
-  /** Get queue ID */
-  get queueId(): QueueIdentifier {
-    return this.lobby.gameConfig.queueId;
+  /**
+   * Return current queue ID / game mode
+   * @returns QueueIdentifier Current queue ID
+   */
+  getQueueId(): QueueIdentifier {
+    return this.resource.gameConfig.queueId;
   }
 
-  /** Set queue ID */
-  set queueId(queueId: QueueIdentifier) {
+  /**
+   * Set current queue ID / gamemode
+   * @param queueId New queue ID
+   */
+  setQueueId(queueId: QueueIdentifier) {
     PostLolLobbyV2Lobby(this.connection, { queueId });
   }
 
   /**
-   * Creates a new game lobby and returns new Lobby
-   * @param connection Client connection
-   * @param queueId Queue / game ID to create lobby for
+   * Get local lane / position preferences
+   * @returns Current position preferences
+   */
+  public getLocalPositionPreferences(): LolLobbyLobbyPositionPreferences {
+    return {
+      firstPreference: this.resource.localMember.firstPositionPreference,
+      secondPreference: this.resource.localMember.secondPositionPreference,
+    };
+  }
+
+  /**
+   * Set local lane / position preferences
+   * @param positionPreferences New preferences
    * @returns Promise
    */
-  public static async create(connection: Connection, queueId: QueueIdentifier): Promise<Lobby> {
-    let lobby: LolLobbyLobbyDto;
+  public async setLocalPositionPreferences(positionPreferences: LolLobbyLobbyPositionPreferences) {
+    return PutLolLobbyV2LobbyMembersLocalMemberPositionPreferences(
+      this.connection,
+      positionPreferences,
+    );
+  }
 
-    // Try to create lobby
+  /* Creation of instance */
+  /**
+   * Start new lobby and create Lobby from it
+   * @param connection Client connection
+   * @param queueId Queue identifier to start lobby with
+   */
+  public static async create(connection: Connection, queueId: QueueIdentifier, extra?: Object) {
+    let resource: LolLobbyLobbyDto;
+
+    // Attempt to create lobby
     try {
-      lobby = await PostLolLobbyV2Lobby(connection, { queueId });
+      resource = await PostLolLobbyV2Lobby(connection, { queueId, ...extra });
     } catch (e) {
       throw new Error(`Failed to create lobby: ${e}`);
     }
 
-    // Make lobby class
-    return new Lobby(connection, lobby);
+    // Make lobby instance
+    return new Lobby(connection, resource);
   }
 
   /**
-   * Retrieves current lobby and returns new Lobby
+   * Get current lobby
    * @param connection Client connection
-   * @returns Promise
    */
-  public static async get(connection: Connection): Promise<Lobby> {
-    let lobby: LolLobbyLobbyDto;
+  public static async getCurrentLobby(connection: Connection) {
+    let resource: LolLobbyLobbyDto;
 
-    // Try to get lobby
+    // Attempt to get lobby
     try {
-      lobby = await GetLolLobbyV2Lobby(connection);
+      resource = await GetLolLobbyV2Lobby(connection);
     } catch (e) {
       throw new Error(`Failed to get lobby: ${e}`);
     }
 
-    // Make lobby class
-    return new Lobby(connection, lobby);
+    // Make lobby instance
+    return new Lobby(connection, resource);
   }
 }
