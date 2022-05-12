@@ -29,9 +29,6 @@ enum QueueIdentifier {
   TFT_HYPER_ROLL = 1130, // Teamfight Tactics (Hyper Roll)
   TFT_DOUBLE_UP = 1150, // Teamfight Tactics (Double Up Workshop)
 
-  // NEXUSBLITZ
-  NEXUS_BLITZ = 1300, // Nexus Blitz
-
   // TUTORIAL_MODULE_[1-3]
   TUTORIAL_MODULE_1 = 2000, // Tutorial Part 1
   TUTORIAL_MODULE_2 = 2010, // Tutorial Part 2
