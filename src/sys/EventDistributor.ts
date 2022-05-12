@@ -81,7 +81,7 @@ export default class EventDistributor {
 
     this.finalizer.register(callback, key);
     this.events.get(key)!.push(
-      (weak || this.eventDistributorSettings.assumeWeak) ? new WeakRef(callback) : callback,
+      (weak ?? this.eventDistributorSettings.assumeWeak) ? new WeakRef(callback) : callback,
     );
   }
 
@@ -103,6 +103,14 @@ export default class EventDistributor {
         }
       }
     });
+  }
+
+  /**
+   * Clear event callbacks
+   * @param key Event key
+   */
+  public clear(key: EventKey): void {
+    this.events.set(key, []);
   }
 
   /**
@@ -133,11 +141,11 @@ export default class EventDistributor {
         // Check for empty callback array:
         if (cleaned.length === 0) {
           // No callbacks after clean
-          // First call key empty event:
-          this.call(Events.EventKeyRemoved, dirtyKey);
+          // First remove callback key from map
+          this.events.set(dirtyKey, []);
 
-          // Remove callback key from map
-          this.events.delete(dirtyKey);
+          // Call key empty event:
+          this.call(Events.EventKeyRemoved, dirtyKey);
         } else {
           // Still callbacks
           // Update event

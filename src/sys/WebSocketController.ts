@@ -20,9 +20,10 @@ export default class WebSocketController extends EventDistributor {
     this.websocket = websocket;
 
     this.eventDistributorSettings.enforceEventRegistration = false;
+    this.eventDistributorSettings.assumeWeak = true;
     this.on(EventDistributorEvents.EventKeyRemoved, (key: string) => {
       this.websocket.send(`Unsubscribe ${key}`);
-    });
+    }, false);
 
     this.websocket.on('message', (data) => this.receive(data));
   }
