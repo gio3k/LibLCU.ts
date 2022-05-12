@@ -21,6 +21,7 @@ export default class WebSocketController {
     this.websocket = websocket;
 
     this.callbacks = new EventDistributor();
+    this.callbacks.eventDistributorSettings.enforceEventRegistration = false;
     this.callbacks.on(EventDistributorEvent.EVENT_KEY_REMOVED, (key: string) => {
       this.websocket.send(`Unsubscribe ${key}`);
     });

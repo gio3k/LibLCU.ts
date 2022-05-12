@@ -19,11 +19,16 @@ export default class EventDistributor {
 
   private dirty: (string | EventDistributorEvent)[] = [];
 
-  // Changes type of reference being make when none provided
-  public assumeWeak: boolean = false;
+  public eventDistributorSettings = {
+    // Requires keys to be registered
+    enforceEventRegistration: true,
 
-  // Amount of keys in the dirty array to hold before forcing a clean
-  public forceCleanThreshold: number = 3;
+    // Changes type of reference being made when none provided
+    assumeWeak: false,
+
+    // Amount of keys in the dirty array to hold before forcing a clean
+    forceCleanThreshold: 3,
+  };
 
   constructor() {
     this.events = new Map();
@@ -37,6 +42,26 @@ export default class EventDistributor {
   }
 
   /**
+   * Register events
+   * @param keys Event keys to register
+   */
+  public registerEvents(keys: (string | EventDistributorEvent)[]) {
+    keys.forEach((key) => {
+      if (!this.events.has(key)) {
+        this.events.set(key, []);
+      }
+    });
+  }
+
+  /**
+   * Get event keys
+   * @returns Event keys
+   */
+  public getEvents() {
+    return this.events.keys();
+  }
+
+  /**
    * Add callback for event key
    * @param key Event key
    * @param callback Event callback
@@ -44,11 +69,16 @@ export default class EventDistributor {
    */
   public on(key: string | EventDistributorEvent, callback: Callback, weak?: boolean): void {
     if (!this.events.has(key)) {
+      if (this.eventDistributorSettings.enforceEventRegistration) {
+        throw new Error(`Unknown event key ${key}`);
+      }
       this.events.set(key, []);
     }
 
     this.finalizer.register(callback, key);
-    this.events.get(key)!.push((weak || this.assumeWeak) ? new WeakRef(callback) : callback);
+    this.events.get(key)!.push(
+      (weak || this.eventDistributorSettings.assumeWeak) ? new WeakRef(callback) : callback,
+    );
   }
 
   /**
@@ -80,10 +110,12 @@ export default class EventDistributor {
     }
 
     // For each dirty event name...
+    // note: the Set stops duplicate keys from being cleaned
     [...new Set(this.dirty)].forEach((dirtyKey: string | EventDistributorEvent) => {
-      // Check if event exists:
+      // Make sure event exists...
       if (this.events.has(dirtyKey)) {
-        // Event exists. Filter out broken references from event callbacks.
+        // Event exists.
+        // Filter out broken references from event callbacks.
         const cleaned = this.events.get(dirtyKey)!.filter((callback) => {
           // If callback isn't a weak reference then just let it through
           if (!(callback instanceof WeakRef)) {
@@ -113,7 +145,7 @@ export default class EventDistributor {
 
   private pushDirty(key: string | EventDistributorEvent) {
     this.dirty.push(key);
-    if (this.dirty.length >= this.forceCleanThreshold) {
+    if (this.dirty.length >= this.eventDistributorSettings.forceCleanThreshold) {
       this.call(EventDistributorEvent.CLEAN);
     }
   }
