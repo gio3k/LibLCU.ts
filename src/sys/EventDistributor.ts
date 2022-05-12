@@ -49,7 +49,7 @@ export default class EventDistributor {
    * Register events
    * @param keys Event keys to register
    */
-  public registerEvents(keys: EventKey[]) {
+  protected registerEvents(keys: EventKey[]) {
     keys.forEach((key) => {
       if (!this.events.has(key)) {
         this.events.set(key, []);
@@ -109,8 +109,17 @@ export default class EventDistributor {
    * Clear event callbacks
    * @param key Event key
    */
-  public clear(key: EventKey): void {
+  protected clear(key: EventKey): void {
     this.events.set(key, []);
+  }
+
+  /**
+   * Get amount of event callbacks
+   * @param key Event key
+   * @returns Amount of callbacks for event
+   */
+  protected count(key: EventKey): number {
+    return this.events.get(key)?.length ?? 0;
   }
 
   /**
