@@ -9,20 +9,18 @@ import { RawData, WebSocket } from 'ws';
 import EventDistributor, { EventDistributorEvent } from './EventDistributor';
 import Lockfile from './Lockfile';
 
-export default class WebSocketController {
+export default class WebSocketController extends EventDistributor {
   private lockfile: Lockfile;
 
   private websocket: WebSocket;
 
-  private callbacks: EventDistributor;
-
   private constructor(lockfile: Lockfile, websocket: WebSocket) {
+    super();
     this.lockfile = lockfile;
     this.websocket = websocket;
 
-    this.callbacks = new EventDistributor();
-    this.callbacks.eventDistributorSettings.enforceEventRegistration = false;
-    this.callbacks.on(EventDistributorEvent.EVENT_KEY_REMOVED, (key: string) => {
+    this.eventDistributorSettings.enforceEventRegistration = false;
+    this.on(EventDistributorEvent.EVENT_KEY_REMOVED, (key: string) => {
       this.websocket.send(`Unsubscribe ${key}`);
     });
 
@@ -43,7 +41,7 @@ export default class WebSocketController {
 
     Object.keys(json)?.forEach((key: string) => {
       const value = json[key];
-      this.callbacks.call(key, value);
+      this.call(key, value);
     });
   }
 
@@ -52,7 +50,7 @@ export default class WebSocketController {
     this.websocket.send(`Subscribe ${name}`);
 
     // Add callback
-    this.callbacks.on(name, callback, true);
+    this.on(name, callback, true);
   }
 
   public static async initialize(lockfile: Lockfile): Promise<WebSocketController> {

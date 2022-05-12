@@ -19,6 +19,13 @@ export default class Connection {
     this.websocket = websocket;
   }
 
+  public subscribe(
+    name: string,
+    callback: (...args: any) => void,
+  ) {
+    return this.websocket.subscribe(name, callback);
+  }
+
   public async request(
     method: string,
     path: string,
