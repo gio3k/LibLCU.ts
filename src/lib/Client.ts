@@ -13,9 +13,13 @@ import QueueIdentifier from '../lcu/ours/QueueIdentifier';
 // Client Core
 import Connection from '../sys/Connection';
 import Lockfile from '../sys/Lockfile';
+import { PostLolLobbyV2Lobby } from '../lcu/functions/LolLobbyV2Lobby';
+import { ActivityEvents } from './Activity';
 
 export default class Client {
   public readonly connection: Connection;
+
+  protected lobby?: Lobby;
 
   constructor(connection: Connection) {
     this.connection = connection;
@@ -48,7 +52,14 @@ export default class Client {
    * @returns Promise<Lobby>
    */
   public async createLobby(queueId: QueueIdentifier): Promise<Lobby> {
-    return Lobby.create(this.connection, queueId);
+    if (this.lobby === undefined) {
+      this.lobby = await Lobby.create(this.connection, queueId);
+      this.prepareLobby();
+    } else {
+      await PostLolLobbyV2Lobby(this.connection, { queueId });
+    }
+
+    return this.lobby;
   }
 
   /**
@@ -56,6 +67,24 @@ export default class Client {
    * @returns Promise<Lobby>
    */
   public async getLobby(): Promise<Lobby> {
-    return Lobby.getCurrentLobby(this.connection);
+    if (this.lobby === undefined) {
+      this.lobby = await Lobby.getCurrentLobby(this.connection);
+      this.prepareLobby();
+    } else {
+      return this.lobby;
+    }
+
+    return this.lobby;
+  }
+
+  private prepareLobby() {
+    if (this.lobby === undefined) {
+      throw new Error('prepareLobby called before Lobby created');
+    }
+
+    this.lobby.on(ActivityEvents.PreDestroy, () => {
+      console.log('destroying lobby');
+      this.lobby = undefined;
+    });
   }
 }

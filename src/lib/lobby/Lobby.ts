@@ -9,18 +9,24 @@
 import {
   GetLolLobbyV2Lobby,
   PostLolLobbyV2Lobby,
+  PostLolLobbyV2LobbyMatchmakingSearch,
   PutLolLobbyV2LobbyMembersLocalMemberPositionPreferences,
 } from '../../lcu/functions/LolLobbyV2Lobby';
+import { PostLolMatchmakingV1ReadyCheckAccept, PostLolMatchmakingV1ReadyCheckDecline } from '../../lcu/functions/LolMatchmakingV1ReadyCheck';
 import LolLobbyLobbyDto from '../../lcu/generated/LolLobbyLobbyDto';
 import LolLobbyLobbyPositionPreferences from '../../lcu/generated/LolLobbyLobbyPositionPreferences';
+import LolLobbyTeamBuilderMatchmakingReadyCheckResource from '../../lcu/generated/LolLobbyTeamBuilderMatchmakingReadyCheckResource';
+import LolLobbyTeamBuilderMatchmakingReadyCheckState from '../../lcu/generated/LolLobbyTeamBuilderMatchmakingReadyCheckState';
 import QueueIdentifier from '../../lcu/ours/QueueIdentifier';
 import Connection from '../../sys/Connection';
-import Activity from '../Activity';
+import Activity, { ActivityEvents } from '../Activity';
 
-export enum Events {
-  ReadyCheck = 'lobby_ready_check',
+enum Events {
   Update = 'lobby_update',
+  ReadyCheck = 'lobby_ready_check',
+  SearchLocalReadyCheckInProgress = 'lobby_ready_check_in_progress__per_search',
 }
+export { Events as LobbyEvents };
 
 export default class Lobby extends Activity {
   resource: LolLobbyLobbyDto;
@@ -48,13 +54,63 @@ export default class Lobby extends Activity {
     //   { errors, lowPriorityData, searchState }
     // /lol-lobby/v2/lobby/countdown
     //   { countdown, enabled }
+    console.log(data, eventType, uri);
+    // DELETE /lol-lobby/v2/lobby
+    // Lobby closed
+    if (eventType === 'Delete' && uri === '/lol-lobby/v2/lobby') {
+      this.call(ActivityEvents.PreDestroy);
+      return;
+    }
 
+    // UPDATE /lol-lobby/v2/lobby
+    // Generic full resource update
     if (eventType === 'Update' && uri === '/lol-lobby/v2/lobby') {
       this.resource = data;
       this.call(Events.Update, data);
-      return;
+    }
+
+    // DELETE /lol-lobby-team-builder/v1/matchmaking
+    // Lobby stopped searching
+    if (eventType === 'Delete' && uri === '/lol-lobby-team-builder/v1/matchmaking') {
+      this.clear(Events.SearchLocalReadyCheckInProgress);
+    }
+
+    // UPDATE
+    // Generic search update
+    if (eventType === 'Update' && uri === '/lol-lobby-team-builder/v1/matchmaking') {
+      const { readyCheck } : {
+        readyCheck: LolLobbyTeamBuilderMatchmakingReadyCheckResource
+      } = data;
+
+      if (readyCheck.state === 'InProgress') {
+        this.call(Events.SearchLocalReadyCheckInProgress, readyCheck);
+      }
     }
   };
+
+  get searching() {
+    return this.count(Events.SearchLocalReadyCheckInProgress) !== 0;
+  }
+
+  async startSearching(
+    gameFoundCallback: (arg0: LolLobbyTeamBuilderMatchmakingReadyCheckResource) => void,
+  ) {
+    this.on(Events.SearchLocalReadyCheckInProgress, gameFoundCallback);
+    return PostLolLobbyV2LobbyMatchmakingSearch(this.connection);
+  }
+
+  async stopSearching() {
+    this.clear(Events.SearchLocalReadyCheckInProgress);
+    return PostLolLobbyV2LobbyMatchmakingSearch(this.connection);
+  }
+
+  async accept() {
+    return PostLolMatchmakingV1ReadyCheckAccept(this.connection);
+  }
+
+  async decline() {
+    return PostLolMatchmakingV1ReadyCheckDecline(this.connection);
+  }
 
   /**
    * Return current queue ID / game mode
@@ -68,8 +124,8 @@ export default class Lobby extends Activity {
    * Set current queue ID / gamemode
    * @param queueId New queue ID
    */
-  setQueueId(queueId: QueueIdentifier) {
-    PostLolLobbyV2Lobby(this.connection, { queueId });
+  async setQueueId(queueId: QueueIdentifier) {
+    return PostLolLobbyV2Lobby(this.connection, { queueId });
   }
 
   /**
