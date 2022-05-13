@@ -6,11 +6,11 @@
  */
 
 enum LolLobbyTeamBuilderMatchmakingReadyCheckState {
-  Invalid = 0,
-  InProgress = 1,
-  EveryoneReady = 2,
-  StrangerNotReady = 3,
-  PartyNotReady = 4,
-  Error = 5,
+  Invalid = 'Invalid', // 0
+  InProgress = 'InProgress', // 1
+  EveryoneReady = 'EveryoneReady', // 2
+  StrangerNotReady = 'StrangerNotReady', // 3
+  PartyNotReady = 'PartyNotReady', // 4
+  Error = 'Error', // 5
 }
 export default LolLobbyTeamBuilderMatchmakingReadyCheckState;
