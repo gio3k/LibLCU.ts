@@ -23,7 +23,7 @@ import Activity, { ActivityEvents } from '../Activity';
 
 enum Events {
   Update = 'update',
-  ReadyCheck = 'lobby_ready_check',
+  ReadyCheckInProgress = 'lobby_ready_check_in_progress',
   SearchLocalReadyCheckInProgress = 'lobby_ready_check_in_progress__per_search',
 }
 export { Events as LobbyEvents };
@@ -84,6 +84,7 @@ export default class Lobby extends Activity {
 
       if (readyCheck.state === LolLobbyTeamBuilderMatchmakingReadyCheckState.InProgress) {
         this.call(Events.SearchLocalReadyCheckInProgress, readyCheck);
+        this.call(Events.ReadyCheckInProgress);
       }
     }
   };
