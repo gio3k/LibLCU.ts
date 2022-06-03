@@ -1,5 +1,5 @@
 # LibLCU.ts
-**LibLCU.ts** communicates with the *League Client server*, pretending to be the UX part of the client. \
+**LibLCU.ts** communicates with the League Client server, pretending to be the UX part of the client. \
 It's implemented in TypeScript and isn't close to completion at the moment.
 
 ## Info
