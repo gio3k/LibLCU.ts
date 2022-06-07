@@ -1,73 +1,26 @@
 /**
- * User main base type
+ * User
+ * User base instance functions
+ *
  * For LibLCU.ts (https://github.com/lotuspar/liblcu.ts)
  * @author lotuspar, 2022
  */
 
-
 import LolChatUserResource from '../../lcu/generated/LolChatUserResource';
 import Connection from '../../sys/Connection';
-import { KnownUser } from './UserTypes';
+import Activity from '../Activity';
 
-export default abstract class User implements KnownUser {
-  protected readonly connection: Connection;
+enum Events {
+  Update = 'update',
+}
+export { Events as UserEvents };
 
-  protected resource: any;
+export default abstract class User extends Activity {
+  resource: LolChatUserResource;
 
-  private user: LolChatUserResource;
+  constructor(connection: Connection, resource: LolChatUserResource) {
+    super(connection);
 
-  public readonly regionalAccountId: string;
-
-  public readonly globalId: string;
-
-  public readonly summonerId: number;
-
-  constructor(
-    connection: Connection,
-    resource: LolChatUserResource,
-  ) {
-    this.connection = connection;
     this.resource = resource;
-    this.user = this.resource;
-
-    this.regionalAccountId = this.resource.id;
-    this.globalId = this.resource.puuid;
-    this.summonerId = this.resource.summonerId;
-  }
-
-  get name() {
-    return this.resource.name;
-  }
-
-  get icon() {
-    return this.resource.icon;
-  }
-
-  get productId() {
-    return this.resource.product;
-  }
-
-  get productName() {
-    return this.resource.productName;
-  }
-
-  get platform() {
-    return this.resource.platformId;
-  }
-
-  get patchline() {
-    return this.resource.patchline;
-  }
-
-  get status() {
-    return this.resource.statusMessage ?? '';
-  }
-
-  get riotName() {
-    return this.resource.gameName;
-  }
-
-  get riotTag() {
-    return this.resource.gameTag;
   }
 }
